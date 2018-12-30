@@ -91,7 +91,59 @@ NonMaskableInterrupt:
 ;
 .segment "CODE"
 ResetInterrupt:
-    jmp Main                   ; Transfer control to Main.
+    sei                        ; Disable IRQs.
+    cld                        ; Disable decimal mode (not supported on Ricoh CPU)
+    
+    lda #0                     ; Load zero into accumulator for subsequent use.
+    sta $2000                  ; Disable NMI
+    sta $2001                  ; Disable rendering
+    sta $4015                  ; Disable APU sound
+    sta $4010                  ; Disable DMC IRQs.
+
+    lda #$40
+    sta $4017                  ; Disable APU frame IRQ
+ 
+    ldx #$FF
+    txs                        ; Initialize stack pointer
+
+@VBlank1:                      ; Wait for first vertical blank to ensure that the
+    bit $2002                  ; PPU is ready. Note: there is a race condition that
+    bpl @VBlank1               ; involving this operation that is addressed in
+                               ; games by waiting twice. More explanation of this
+                               ; is warranted when I understand the details.
+
+    ldx #$00                   ; Clear RAM. We start by initializing the index
+    lda #$00                   ; register (x) with zero, and also load zero into the
+@ZeroMemLoop:                  ; the accumulator. Following that, we loop through 
+    sta $0000, x               ; each value of x, storing the zero contained in the
+    sta $0100, x               ; accumulator to offsets in memory that are exactly
+    sta $0200, x               ; 256 bytes apart. When the loop is complete, the
+    sta $0300, x               ; entire range from [$0000, $0800) will be zeroed.
+    sta $0400, x               
+    sta $0500, x
+    sta $0600, x
+    sta $0700, x
+    inx
+    bne @ZeroMemLoop
+
+    ldx #$00                   ; Similarly, we need to "walk" through memory to
+    lda #$FE                   ; move all sprites off-screen by poking off-screen
+@HideSpriteLoop:               ; positions into their positions. The memory we are
+    sta $0200, x               ; writing to is the $0200 region used for performing
+    inx                        ; DMA with the PPU. Note: we could have omitted the
+    bpl @HideSpriteLoop       ; first 'ldx' instruction here, included for clarity.
+
+@VBlank2:                      ; Wait for the second vertical blank. Due to the
+    bit $2002                  ; work done to zero memory beweem this and the first
+    bpl @VBlank2               ; "vertical blank wait", we know the PPU is ready.
+
+    ;
+    ; TODO(tdial): Initial one-time setup here.
+    ;
+
+    lda #%10001000             ; Load flags to enable NMI's
+    sta $2000                  ; Enable NMI
+    jmp Main                   ; Done. Transfer control to Main.
 
 
 ;
