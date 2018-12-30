@@ -131,10 +131,12 @@ ResetInterrupt:
 @HideSpriteLoop:               ; positions into their positions. The memory we are
     sta $0200, x               ; writing to is the $0200 region used for performing
     inx                        ; DMA with the PPU. Note: we could have omitted the
-    bpl @HideSpriteLoop        ; first 'ldx' instruction here, included for clarity.
+    bpl @HideSpriteLoop        ; first 'ldx' instruction here since it would already
+                               ; have held the value of zero after the ZeroMemLoop.
+                               ; It has been left in for clarity here.
 
 @VBlank2:                      ; Wait for the second vertical blank. Due to the
-    bit $2002                  ; work done to zero memory beweem this and the first
+    bit $2002                  ; work done to zero memory between this and the first
     bpl @VBlank2               ; "vertical blank wait", we know the PPU is ready.
 
     ;
