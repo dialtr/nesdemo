@@ -83,7 +83,7 @@ GlobalCounter:
 ;
 .segment "CODE" 
 NonMaskableInterrupt:
-    rti						; Return from handler.
+    rti                        ; Return from handler.
 
 
 ;
@@ -91,7 +91,7 @@ NonMaskableInterrupt:
 ;
 .segment "CODE"
 ResetInterrupt:
-    jmp Main			; Transfer control to Main.
+    jmp Main                   ; Transfer control to Main.
 
 
 ;
@@ -99,7 +99,7 @@ ResetInterrupt:
 ;
 .segment "CODE"
 IrqInterrupt:
-    rti						; Return from interupt handler.
+    rti                        ; Return from interupt handler.
 
 
 ;
@@ -108,7 +108,7 @@ IrqInterrupt:
 .segment "CODE"
 Main:
 @Loop:
-    jmp @Loop			; Loop forever, waiting for NMI's.
+    jmp @Loop                  ; Loop forever, waiting for NMI's.
 
 
 
