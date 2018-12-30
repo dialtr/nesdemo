@@ -59,9 +59,9 @@ GlobalCounter:
 ; Finally, the address of the IRQ handler routine is stored at $FFFE.
 
 .segment "VECTORS"
-.word NonMaskableInterrupt          ; $FFFA
-.word ResetInterrupt                ; $FFFC
-.word IrqInterrupt                  ; $FFFE
+.word NonMaskableInterrupt      ; $FFFA
+.word ResetInterrupt            ; $FFFC
+.word IrqInterrupt              ; $FFFE
 
 
 ;
@@ -131,7 +131,7 @@ ResetInterrupt:
 @HideSpriteLoop:               ; positions into their positions. The memory we are
     sta $0200, x               ; writing to is the $0200 region used for performing
     inx                        ; DMA with the PPU. Note: we could have omitted the
-    bpl @HideSpriteLoop       ; first 'ldx' instruction here, included for clarity.
+    bpl @HideSpriteLoop        ; first 'ldx' instruction here, included for clarity.
 
 @VBlank2:                      ; Wait for the second vertical blank. Due to the
     bit $2002                  ; work done to zero memory beweem this and the first
