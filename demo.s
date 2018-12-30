@@ -59,9 +59,9 @@ GlobalCounter:
 ; Finally, the address of the IRQ handler routine is stored at $FFFE.
 
 .segment "VECTORS"
-.word NonMaskableInterrupt					; $FFFA
-.word ResetInterrupt								; $FFFC
-.word IrqInterrupt									; $FFFE
+.word NonMaskableInterrupt          ; $FFFA
+.word ResetInterrupt                ; $FFFC
+.word IrqInterrupt                  ; $FFFE
 
 
 ;
