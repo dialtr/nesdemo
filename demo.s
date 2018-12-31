@@ -33,11 +33,8 @@ INES_SRAM   = 0                ; No battery-backed RAM in use.
 ; 3 cycles to complete, while a standard load requires three bytes and
 ; 4 cycles, respectively. 
 ;
-; This example reserves one byte in the zeropage area for a counter,
-; which is referenced elsewhere via the 'GlobalCounter' label.
-;
 .segment "ZEROPAGE"
-GlobalCounter:
+GlobalValue:                   ; Exmaple of a value stored in ZP.
 .res 1
 	
 
@@ -139,6 +136,20 @@ ResetInterrupt:
     bit $2002                  ; work done to zero memory between this and the first
     bpl @VBlank2               ; "vertical blank wait", we know the PPU is ready.
 
+@LoadPalette:                  ; Load the palette. We start by reading the PPU
+    lda $2002                  ; status register ($2002) to reset the high/low
+    lda #$3F                   ; address latch. Next, we write the high and low
+    sta $2006                  ; bytes of the target address $3F00. Finally, we
+    lda #$00                   ; initialize X to zero. The @LoadPaletteLoop 
+    sta $2006                  ; sequence writes the palette entries in order,
+    ldx #$0                    ; incrementing x each time. When the comparison
+@LoadPaletteLoop:              ; tells us that x reaches the value of 32, we
+    lda Palette1, x            ; know that we've written all palette entries
+    sta $2007                  ; and we can break out of the loop.
+    inx
+    cpx #$20
+    bne @LoadPaletteLoop
+
     ;
     ; TODO(tdial): Initial one-time setup here.
     ;
@@ -164,6 +175,20 @@ Main:
 @Loop:
     jmp @Loop                  ; Loop forever, waiting for NMI's.
 
+
+
+;
+; Palette Data
+;
+.segment "CODE"
+Palette1:
+    ; Background Palette #1
+    .byte $0F, $31, $32, $33, $0F, $35, $36, $37
+    .byte $0F, $39, $3A, $3B, $0F, $3D, $3E, $0F
+    
+    ; Sprite Palette #1
+    .byte $0F, $1C, $15, $14, $0F, $02, $38, $3C
+    .byte $0F, $1C, $15, $14, $0F, $02, $38, $3C
 
 
 ;
