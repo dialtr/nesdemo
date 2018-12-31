@@ -150,12 +150,46 @@ ResetInterrupt:
     cpx #$20
     bne @LoadPaletteLoop
 
+
+@LoadBackground:               ; TODO(tdial): Document background loading
+    lda $2002
+    lda #$20
+    sta $2006
+    lda #$00
+    sta $2006
+    ldx #$00
+@LoadBackgroundLoop:
+    lda #$00
+    sta $2007
+    inx
+    bne @LoadBackgroundLoop    
+
+@LoadAttribute:                ; TODO(tdial): Document attribute loading
+    lda $2002
+    lda #$23
+    sta $2006
+    lda #$C0
+    sta $2006
+    ldx #$00
+@LoadAttributeLoop:
+    lda #$00
+    sta $2007
+    inx
+    cpx #$08
+    bne @LoadAttributeLoop
+
+
+
     ;
     ; TODO(tdial): Initial one-time setup here.
     ;
 
     lda #%10001000             ; Load flags to enable NMI's
     sta $2000                  ; Enable NMI
+
+    lda #%00011110             ; Enable background TODO(tdial): Understand this
+    sta $2001
+
     jmp Main                   ; Done. Transfer control to Main.
 
 
@@ -182,19 +216,25 @@ Main:
 ;
 .segment "CODE"
 Palette1:
-    ; Background Palette #1
-    .byte $0F, $31, $32, $33, $0F, $35, $36, $37
-    .byte $0F, $39, $3A, $3B, $0F, $3D, $3E, $0F
+    ; Background Palettes
+    .byte $0F, $31, $32, $33   ; #1
+    .byte $0F, $35, $36, $37   ; #2
+    .byte $0F, $39, $3A, $3B   ; #3
+    .byte $0F, $3D, $3E, $0F   ; #4
     
-    ; Sprite Palette #1
-    .byte $0F, $1C, $15, $14, $0F, $02, $38, $3C
-    .byte $0F, $1C, $15, $14, $0F, $02, $38, $3C
+    ; Sprite Palettes
+    .byte $0F, $1C, $15, $14   ; #1
+    .byte $0F, $02, $38, $3C   ; #2
+    .byte $0F, $1C, $15, $14   ; #3
+    .byte $0F, $02, $38, $3C   ; #4
 
 
 ;
 ; The TILES section is where we locate static resources for the background.
 ;
 .segment "TILES"
+    .byte $00, $3F, $1F, $0F, $07, $03, $01, $00               ; Block 1 LSB
+    .byte $00, $3F, $5F, $6F, $77, $7B, $7D, $7E               ; Block 2 MSB
 
 
 ;
