@@ -1,4 +1,4 @@
-;
+
 ; Nintendo Entertainment System - Demo Program
 ;
 ; Copyright (C) 2018 Thomas R. Dial
@@ -235,6 +235,7 @@ Palette1:
 .segment "TILES"
     .byte $00, $3F, $1F, $0F, $07, $03, $01, $00               ; Block 1 LSB
     .byte $00, $3F, $5F, $6F, $77, $7B, $7D, $7E               ; Block 2 MSB
+
 
 
 ;
