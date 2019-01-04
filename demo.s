@@ -125,10 +125,10 @@ ResetInterrupt:
 
     ldx #$00                   ; Similarly, we need to "walk" through memory to
     lda #$FE                   ; move all sprites off-screen by poking off-screen
-@HideSpriteLoop:               ; positions into their positions. The memory we are
+@HideSpriteLoop:               ; positions into their registers. The memory we are
     sta $0200, x               ; writing to is the $0200 region used for performing
     inx                        ; DMA with the PPU. Note: we could have omitted the
-    bpl @HideSpriteLoop        ; first 'ldx' instruction here since it would already
+    bne @HideSpriteLoop        ; first 'ldx' instruction here since it would already
                                ; have held the value of zero after the ZeroMemLoop.
                                ; It has been left in for clarity here.
 
